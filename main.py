@@ -1,5 +1,7 @@
 import streamlit as st
-from function-back import preprocess_image, extract_glcm_feature, predict_image
+import function-back.preprocess_image
+import function-back.extract_glcm_feature
+import function-back.predict_image
 import cv2
 import numpy as np
 
