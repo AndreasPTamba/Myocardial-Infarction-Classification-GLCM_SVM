@@ -1,5 +1,5 @@
 import streamlit as st
-import function-back as fn
+import modules.function as fn
 import cv2
 import numpy as np
 
