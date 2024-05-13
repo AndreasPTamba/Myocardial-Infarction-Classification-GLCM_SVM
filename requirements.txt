@@ -3,4 +3,4 @@ pandas
 numpy
 scikit-learn==1.4.1.post1
 scikit-image
-opencv-python
+opencv-python==4.9.0.80
