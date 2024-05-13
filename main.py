@@ -37,6 +37,6 @@ if __name__ == "__main__":
     # print(normalized_feature.shape)
   
   if st.button("Predict"):
-    prediction = predict_image(image)
+    prediction = fn.predict_image(image)
     st.write(prediction)
     
