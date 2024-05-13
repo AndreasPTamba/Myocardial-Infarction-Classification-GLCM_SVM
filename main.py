@@ -77,7 +77,7 @@ def predict_image(image):
 
 
 if __name__ == "__main__":
-  st.title("D4 PPDM - EKG Simple Classification App")
+  st.title("D4 PPDM - EKG Simple Classification")
   st.write("This is a simple web app to predict Myocardial Infarction using GLCM feature")
   
   st.divider()
