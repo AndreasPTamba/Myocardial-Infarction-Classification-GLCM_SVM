@@ -1,7 +1,5 @@
 import streamlit as st
-import function-back.preprocess_image
-import function-back.extract_glcm_feature
-import function-back.predict_image
+import function-back as fn
 import cv2
 import numpy as np
 
@@ -24,12 +22,12 @@ if __name__ == "__main__":
     st.write("Image Preview")
     st.image(image, use_column_width=True)
     
-    gray_image = preprocess_image(image)
+    gray_image = fn.preprocess_image(image)
     
     st.write("Grayscale Image")
     st.image(gray_image, use_column_width=True)
     
-    glcm_feature = extract_glcm_feature(gray_image)
+    glcm_feature = fn.extract_glcm_feature(gray_image)
     # normalized_feature = fn.normalize_feature(glcm_feature)
     
     st.write("GLCM Feature")
