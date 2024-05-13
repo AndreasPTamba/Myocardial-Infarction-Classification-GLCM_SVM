@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import cv2
 from skimage.feature import graycomatrix, graycoprops
-import joblib
+# import joblib
 import pickle
 
 def resize_image(image, width=None, height=None):
