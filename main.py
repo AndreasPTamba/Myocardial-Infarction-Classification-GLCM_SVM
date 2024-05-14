@@ -3,8 +3,8 @@ import pandas as pd
 import numpy as np
 import cv2
 from skimage.feature import graycomatrix, graycoprops
-# import joblib
-import pickle
+import joblib
+# import pickle
 
 def resize_image(image, width=None, height=None):
   cv2.rectangle(image, (78, 294), (78 + 2089, 294 + 1217), (0, 255, 0), 2)
@@ -66,10 +66,8 @@ def predict_image(image):
   glcm_feature = extract_glcm_feature(gray_image)
   # normalized_feature = normalize_feature(glcm_feature)
   
-  # Load the model
-  with open('model.pkl', 'rb') as file:
-    svm = pickle.load(file)
   
+  svm = joblib.load('jbmodel.joblib')
   # svm = joblib.load('model/svm_model.pkl')
   
   prediction = svm.predict(glcm_feature)
