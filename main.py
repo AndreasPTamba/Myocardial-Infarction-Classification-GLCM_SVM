@@ -107,8 +107,7 @@ if __name__ == "__main__":
     # st.write(normalized_feature)
     # print(normalized_feature)
     # print(normalized_feature.shape)
-  
-  if st.button("Predict"):
-    prediction = predict_image(image)
-    st.write(prediction)
+    if st.button("Predict"):
+      prediction = predict_image(image)
+      st.write(prediction)
     
