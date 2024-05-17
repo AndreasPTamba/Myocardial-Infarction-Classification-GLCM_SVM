@@ -59,7 +59,7 @@ def extract_glcm_feature(image):
 
 def normalize_feature(scaled):
   #Importing the scaler
-  scalerfile = './website/scaler.sav'
+  scalerfile = './scaler.sav'
   scaler = pickle.load(open(scalerfile, 'rb'))
   normalized_feature = scaler.transform(scaled)
   return normalized_feature
