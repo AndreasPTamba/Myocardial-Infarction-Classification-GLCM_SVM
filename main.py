@@ -105,6 +105,7 @@ if __name__ == "__main__":
     
     st.write("GLCM Feature")
     st.write(glcm_feature)
+    st.write("Normalized Feature")
     st.write(normalized_feature)
     print(normalized_feature)
     print(normalized_feature.shape)
