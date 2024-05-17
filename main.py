@@ -5,6 +5,8 @@ import cv2
 from skimage.feature import graycomatrix, graycoprops
 import joblib
 import pickle
+from matplotlib import pyplot as plt
+import seaborn as sns
 # import pickle
 
 def resize_image(image, width=None, height=None):
@@ -76,37 +78,17 @@ def predict_image(image):
   prediction = svm.predict(glcm_feature)
   return prediction
 
-def accuracy_score(y_true, y_pred):
-  return np.mean(y_true == y_pred)
-
-def precision_score(y_true, y_pred):
-  tp = np.sum((y_true == 1) & (y_pred == 1))
-  fp = np.sum((y_true == 0) & (y_pred == 1))
-  return tp / (tp + fp)
-
-def recall_score(y_true, y_pred):
-  tp = np.sum((y_true == 1) & (y_pred == 1))
-  fn = np.sum((y_true == 1) & (y_pred == 0))
-  return tp / (tp + fn)
-
-def f1_score(y_true, y_pred):
-  precision = precision_score(y_true, y_pred)
-  recall = recall_score(y_true, y_pred)
-  return 2 * (precision * recall) / (precision + recall)
-
-def confusion_matrix(y_true, y_pred):
-  tp = np.sum((y_true == 1) & (y_pred == 1))
-  fp = np.sum((y_true == 0) & (y_pred == 1))
-  fn = np.sum((y_true == 1) & (y_pred == 0))
-  tn = np.sum((y_true == 0) & (y_pred == 0))
-  return np.array([[tp, fp], [fn, tn]])
-
-def evaluate_model(y_true, y_pred):
-  acc = accuracy_score(y_true, y_pred)
-  prec = precision_score(y_true, y_pred)
-  rec = recall_score(y_true, y_pred)
-  f1 = f1_score(y_true, y_pred)
+def classification_report():
+  report = pd.read_csv('classification_report.csv')
+  acc = report['accuracy'][0]
+  prec = report['precision'][0]
+  rec = report['recall'][0]
+  f1 = report['f1-score'][0]
   return acc, prec, rec, f1
+
+def confusion_matrix():
+  cm = pd.read_csv('confusion_matrix.csv')
+  return cm
 
 if __name__ == "__main__":
   st.title("D4 PPDM - EKG Simple Classification")
@@ -115,6 +97,21 @@ if __name__ == "__main__":
   st.divider()
   st.write("Upload Image")
   image = st.file_uploader("Choose an image...", type=['jpg', 'png', 'jpeg'])
+  
+  if st.button("Evaluate Model"):
+    acc, prec, rec, f1 = classification_report()
+    st.write("Accuracy:", acc)
+    st.write("Precision:", prec)
+    st.write("Recall:", rec)
+    st.write("F1-Score:", f1)
+    
+    st.write("Confusion Matrix")
+    cm = confusion_matrix()
+    sns.heatmap(cm, annot=True, cmap='Blues')
+    plt.xlabel('Predicted')
+    plt.ylabel('Actual')
+    plt.title('Confusion Matrix')
+    st.pyplot()
   
   if image is not None:
     # Convert the file to an opencv image
@@ -140,20 +137,8 @@ if __name__ == "__main__":
     st.write(normalized_feature)
     print(normalized_feature)
     print(normalized_feature.shape)
+    
     if st.button("Predict"):
       prediction = predict_image(image)
       st.write(prediction)
-      
-    if st.button("Evaluate Model"):
-      y_true = np.array([1, 0, 1, 0, 1, 0, 1, 0, 1, 0])
-      y_pred = np.array([1, 0, 1, 0, 1, 0, 1, 0, 1, 0])
-      acc, prec, rec, f1 = evaluate_model(y_true, y_pred)
-      st.write("Accuracy:", acc)
-      st.write("Precision:", prec)
-      st.write("Recall:", rec)
-      st.write("F1 Score:", f1)
-      
-      cm = confusion_matrix(y_true, y_pred)
-      st.write("Confusion Matrix:")
-      st.write(cm)
       
