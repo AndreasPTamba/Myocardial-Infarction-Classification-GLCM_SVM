@@ -101,7 +101,7 @@ if __name__ == "__main__":
     st.image(gray_image, use_column_width=True)
     
     glcm_feature = extract_glcm_feature(gray_image)
-    normalized_feature = fn.normalize_feature(glcm_feature)
+    normalized_feature = normalize_feature(glcm_feature)
     
     st.write("GLCM Feature")
     st.write(glcm_feature)
