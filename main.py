@@ -105,11 +105,11 @@ if __name__ == "__main__":
   image = st.file_uploader("Choose an image...", type=['jpg', 'png', 'jpeg'])
   
   if st.button("Evaluate Model"):
-    acc, prec, rec, f1 = classification_report()
-    st.write("Accuracy:", acc)
-    st.write("Precision:", prec)
-    st.write("Recall:", rec)
-    st.write("F1-Score:", f1)
+    st.write("Classification Report")
+    accuracy, macro_avg, weighted_avg = classification_report()
+    st.write("Accuracy:", accuracy)
+    st.write("Macro Average Precision:", macro_avg)
+    st.write("Weighted Average F1 Score:", weighted_avg)
     
     st.write("Confusion Matrix")
     cm = confusion_matrix()
