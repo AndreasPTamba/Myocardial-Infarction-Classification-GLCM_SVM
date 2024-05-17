@@ -91,7 +91,6 @@ def classification_report():
   
   return accuracy_value, macro_avg_precision, weighted_avg_f1
 
-
 def confusion_matrix():
   cm = pd.read_csv('confusion_matrix.csv')
   return cm
@@ -111,6 +110,7 @@ if __name__ == "__main__":
     st.write("Macro Average Precision:", macro_avg)
     st.write("Weighted Average F1 Score:", weighted_avg)
     
+    st.set_option('deprecation.showPyplotGlobalUse', False)
     st.write("Confusion Matrix")
     cm = confusion_matrix()
     sns.heatmap(cm, annot=True, cmap='Blues')
