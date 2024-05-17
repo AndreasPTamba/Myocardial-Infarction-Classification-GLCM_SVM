@@ -76,6 +76,37 @@ def predict_image(image):
   prediction = svm.predict(glcm_feature)
   return prediction
 
+def accuracy_score(y_true, y_pred):
+  return np.mean(y_true == y_pred)
+
+def precision_score(y_true, y_pred):
+  tp = np.sum((y_true == 1) & (y_pred == 1))
+  fp = np.sum((y_true == 0) & (y_pred == 1))
+  return tp / (tp + fp)
+
+def recall_score(y_true, y_pred):
+  tp = np.sum((y_true == 1) & (y_pred == 1))
+  fn = np.sum((y_true == 1) & (y_pred == 0))
+  return tp / (tp + fn)
+
+def f1_score(y_true, y_pred):
+  precision = precision_score(y_true, y_pred)
+  recall = recall_score(y_true, y_pred)
+  return 2 * (precision * recall) / (precision + recall)
+
+def confusion_matrix(y_true, y_pred):
+  tp = np.sum((y_true == 1) & (y_pred == 1))
+  fp = np.sum((y_true == 0) & (y_pred == 1))
+  fn = np.sum((y_true == 1) & (y_pred == 0))
+  tn = np.sum((y_true == 0) & (y_pred == 0))
+  return np.array([[tp, fp], [fn, tn]])
+
+def evaluate_model(y_true, y_pred):
+  acc = accuracy_score(y_true, y_pred)
+  prec = precision_score(y_true, y_pred)
+  rec = recall_score(y_true, y_pred)
+  f1 = f1_score(y_true, y_pred)
+  return acc, prec, rec, f1
 
 if __name__ == "__main__":
   st.title("D4 PPDM - EKG Simple Classification")
@@ -112,4 +143,17 @@ if __name__ == "__main__":
     if st.button("Predict"):
       prediction = predict_image(image)
       st.write(prediction)
-    
+      
+    if st.button("Evaluate Model"):
+      y_true = np.array([1, 0, 1, 0, 1, 0, 1, 0, 1, 0])
+      y_pred = np.array([1, 0, 1, 0, 1, 0, 1, 0, 1, 0])
+      acc, prec, rec, f1 = evaluate_model(y_true, y_pred)
+      st.write("Accuracy:", acc)
+      st.write("Precision:", prec)
+      st.write("Recall:", rec)
+      st.write("F1 Score:", f1)
+      
+      cm = confusion_matrix(y_true, y_pred)
+      st.write("Confusion Matrix:")
+      st.write(cm)
+      
