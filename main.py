@@ -80,11 +80,17 @@ def predict_image(image):
 
 def classification_report():
   report = pd.read_csv('classification_report.csv')
-  acc = report['accuracy'][0]
-  prec = report['precision'][0]
-  rec = report['recall'][0]
-  f1 = report['f1-score'][0]
-  return acc, prec, rec, f1
+  
+  accuracy = report[report['Unnamed: 0'] == 'accuracy']
+  macro_avg = report[report['Unnamed: 0'] == 'macro avg']
+  weighted_avg = report[report['Unnamed: 0'] == 'weighted avg']
+  
+  accuracy_value = accuracy['precision'].values[0]  # Assuming 'precision' column holds accuracy
+  macro_avg_precision = macro_avg['precision'].values[0]
+  weighted_avg_f1 = weighted_avg['f1-score'].values[0]
+  
+  return accuracy_value, macro_avg_precision, weighted_avg_f1
+
 
 def confusion_matrix():
   cm = pd.read_csv('confusion_matrix.csv')
