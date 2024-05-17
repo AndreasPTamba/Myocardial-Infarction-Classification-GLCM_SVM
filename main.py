@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 from skimage.feature import graycomatrix, graycoprops
 import joblib
+import pickle
 # import pickle
 
 def resize_image(image, width=None, height=None):
@@ -56,10 +57,12 @@ def extract_glcm_feature(image):
   test = df.iloc[:, :].values
   return test
 
-# def normalize_feature(scaled):
-#   scaler = MinMaxScaler(feature_range=(0, 1))
-#   normalized_feature = scaler.fit_transform(scaled)
-#   return normalized_feature
+def normalize_feature(scaled):
+  #Importing the scaler
+  scalerfile = './website/scaler.sav'
+  scaler = pickle.load(open(scalerfile, 'rb'))
+  normalized_feature = scaler.transform(scaled)
+  return normalized_feature
 
 def predict_image(image):
   gray_image = preprocess_image(image)
@@ -98,13 +101,13 @@ if __name__ == "__main__":
     st.image(gray_image, use_column_width=True)
     
     glcm_feature = extract_glcm_feature(gray_image)
-    # normalized_feature = fn.normalize_feature(glcm_feature)
+    normalized_feature = fn.normalize_feature(glcm_feature)
     
     st.write("GLCM Feature")
     st.write(glcm_feature)
-    # st.write(normalized_feature)
-    # print(normalized_feature)
-    # print(normalized_feature.shape)
+    st.write(normalized_feature)
+    print(normalized_feature)
+    print(normalized_feature.shape)
     if st.button("Predict"):
       prediction = predict_image(image)
       st.write(prediction)
