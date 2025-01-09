@@ -409,9 +409,9 @@ def show_about_mi_page():
 
     # Ilustrasi jantung menggunakan URL gambar yang valid
     st.image(
-        "https://cdn.pixabay.com/photo/2014/04/03/00/39/heart-309960_1280.png",
+        "https://upload.wikimedia.org/wikipedia/commons/9/9e/Heart_anatomy_with_coronary_arteries_and_veins.png",
         caption="Ilustrasi Jantung dan Sistem Peredaran Darah",
-        use_container_width=True
+        use_column_width=True
     )
 
     st.markdown("""
