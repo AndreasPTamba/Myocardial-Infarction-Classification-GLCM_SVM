@@ -10,26 +10,68 @@ import seaborn as sns
 import time
 
 def resize_image(image, width=None, height=None):
-    cv2.rectangle(image, (78, 294), (78 + 2089, 294 + 1217), (0, 255, 0), 2)
-    roi = image[294:294+1217, 78:78+2089]
-    roi_rgb = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
-    
-    h, w = roi_rgb.shape[:2]
-    aspect_ratio = w / h
+    try:
+        if image is None:
+            raise ValueError("Input image is None")
+            
+        # Make a copy of the image to avoid modifying the original
+        img_copy = image.copy()
+        
+        # Check if the image dimensions are valid for ROI extraction
+        img_height, img_width = img_copy.shape[:2]
+        if img_height < (294 + 1217) or img_width < (78 + 2089):
+            # If image is too small, use the entire image
+            roi = img_copy
+        else:
+            # Draw rectangle and extract ROI as before
+            cv2.rectangle(img_copy, (78, 294), (78 + 2089, 294 + 1217), (0, 255, 0), 2)
+            roi = img_copy[294:294+1217, 78:78+2089]
+        
+        # Convert to RGB
+        if len(roi.shape) == 2:  # If image is grayscale
+            roi_rgb = cv2.cvtColor(roi, cv2.COLOR_GRAY2RGB)
+        else:
+            roi_rgb = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
+        
+        h, w = roi_rgb.shape[:2]
+        aspect_ratio = w / h
 
-    if width is None:
-        new_height = int(height / aspect_ratio)
-        resized_image = cv2.resize(roi_rgb, (height, new_height), interpolation=cv2.INTER_AREA)
-    else:
-        new_width = int(width * aspect_ratio)
-        resized_image = cv2.resize(roi_rgb, (new_width, width), interpolation=cv2.INTER_AREA)
+        if width is None and height is not None:
+            new_height = height
+            new_width = int(height * aspect_ratio)
+            resized_image = cv2.resize(roi_rgb, (new_width, new_height), interpolation=cv2.INTER_AREA)
+        elif width is not None:
+            new_width = width
+            new_height = int(width / aspect_ratio)
+            resized_image = cv2.resize(roi_rgb, (new_width, new_height), interpolation=cv2.INTER_AREA)
+        else:
+            resized_image = roi_rgb  # Return original size if no dimensions specified
 
-    return resized_image
+        return resized_image
+        
+    except Exception as e:
+        st.error(f"Error processing image: {str(e)}")
+        return None
 
 def preprocess_image(image):
-    resized_image = resize_image(image, 256)
-    gray_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
-    return gray_image
+    try:
+        if image is None:
+            raise ValueError("Input image is None")
+            
+        resized_image = resize_image(image, 256)
+        if resized_image is None:
+            raise ValueError("Failed to resize image")
+            
+        # Check if image is already grayscale
+        if len(resized_image.shape) == 2:
+            return resized_image
+            
+        gray_image = cv2.cvtColor(resized_image, cv2.COLOR_RGB2GRAY)
+        return gray_image
+        
+    except Exception as e:
+        st.error(f"Error preprocessing image: {str(e)}")
+        return None
 
 def calc_glcm_all_agls(img, props, dists=[1], agls=[0, np.pi/4, np.pi/2, 3*np.pi/4], lvl=256, sym=True, norm=True):
     glcm = graycomatrix(img, 
