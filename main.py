@@ -406,22 +406,21 @@ def display_results(prediction, confidence):
 
 def show_about_mi_page():
     st.markdown('<h1 class="main-header">Memahami Infark Miokard</h1>', unsafe_allow_html=True)
-    
-    # Menambahkan ilustrasi jantung
+
+    # Ilustrasi jantung menggunakan URL gambar yang valid
     st.image(
-        "https://upload.wikimedia.org/wikipedia/commons/3/3d/Heart_anterior_exterior_view.png",
+        "https://cdn.pixabay.com/photo/2014/04/03/00/39/heart-309960_1280.png",
         caption="Ilustrasi Jantung dan Sistem Peredaran Darah",
         use_container_width=True
     )
-    
+
     st.markdown("""
     ### Apa itu Infark Miokard?
     Infark Miokard (MI), atau lebih dikenal sebagai serangan jantung, terjadi ketika aliran darah 
     ke otot jantung terhambat oleh penyumbatan pada pembuluh darah koroner. Hal ini dapat menyebabkan 
     kerusakan permanen pada jaringan jantung jika tidak ditangani segera.
     """)
-    
-    # Menambahkan informasi statistik
+
     st.info("""
     **Tahukah Anda?**  
     Penyakit jantung adalah salah satu penyebab utama kematian di dunia. Penanganan dan 
@@ -440,11 +439,11 @@ def show_about_mi_page():
         - Pola Makan Tidak Sehat
         """)
         st.image(
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Quit_smoking_illustration.svg/512px-Quit_smoking_illustration.svg.png",
+            "https://cdn.pixabay.com/photo/2016/11/18/16/14/no-smoking-1834640_1280.png",
             caption="Berhenti merokok untuk mengurangi risiko MI",
             use_container_width=True
         )
-    
+
     with col2:
         st.subheader("Faktor Risiko yang Tidak Dapat Diubah")
         st.markdown("""
@@ -454,17 +453,17 @@ def show_about_mi_page():
         - Faktor Genetik
         """)
         st.image(
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Family_genogram.svg/512px-Family_genogram.svg.png",
+            "https://cdn.pixabay.com/photo/2015/12/01/20/28/family-1071458_1280.png",
             caption="Riwayat keluarga dapat memengaruhi risiko penyakit jantung",
             use_container_width=True
         )
 
-    # Menambahkan catatan akhir
     st.markdown("""
     ### Pencegahan
     Perubahan gaya hidup yang sehat, seperti pola makan seimbang, olahraga teratur, dan menghindari stres, 
     dapat mengurangi risiko infark miokard secara signifikan. Konsultasikan dengan dokter untuk informasi lebih lanjut.
     """)
+
 
 
 def show_model_performance_page():
