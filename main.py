@@ -316,7 +316,11 @@ def show_home_page():
 
 def show_analysis_page():
     st.markdown('<h1 class="main-header">Dashboard Analisis EKG</h1>', unsafe_allow_html=True)
-    
+
+    # Initialize session state for analysis history
+    if "analysis_history" not in st.session_state:
+        st.session_state["analysis_history"] = []
+
     uploaded_file = st.file_uploader(
         "Unggah Gambar EKG",
         type=['jpg', 'jpeg', 'png'],
@@ -367,6 +371,7 @@ def show_analysis_page():
                 
         except Exception as e:
             st.error(f"Terjadi kesalahan dalam memproses gambar: {str(e)}")
+
 
 def display_results(prediction, confidence):
     if prediction == 1:
