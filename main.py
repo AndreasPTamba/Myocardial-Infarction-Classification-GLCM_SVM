@@ -186,12 +186,12 @@ def show_analysis_page():
             col1, col2 = st.columns(2)
             with col1:
                 st.subheader("Gambar Asli")
-                st.image(image, use_column_width=True)
+                st.image(image, use_container_width=True)
             
             with col2:
                 st.subheader("Gambar Terproses")
                 processed_image = preprocess_image(image)
-                st.image(processed_image, use_column_width=True)
+                st.image(processed_image, use_container_width=True)
             
             if st.button("Analisis EKG", use_container_width=True):
                 with st.spinner("Menganalisis..."):
