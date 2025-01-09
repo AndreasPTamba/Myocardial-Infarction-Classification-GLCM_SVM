@@ -174,46 +174,33 @@ def main():
             color: #31333F;
         }
         
+        /* Custom button styling */
+        div[data-testid="stButton"] button {
+            width: 100%;
+            background-color: #f0f2f6;
+            color: #31333F;
+            border: none;
+            padding: 0.5rem 1rem;
+            margin: 0.25rem 0;
+            border-radius: 5px;
+            text-align: left;
+            font-size: 1rem;
+        }
+        
+        div[data-testid="stButton"] button:hover {
+            background-color: #FF4B4B;
+            color: white;
+        }
+        
+        /* Active button state */
+        div[data-testid="stButton"] button.active {
+            background-color: #FF4B4B;
+            color: white;
+        }
+        
         /* Override Streamlit's default text colors */
         .stMarkdown, .stText {
             color: #31333F !important;
-        }
-        
-        /* Make text in containers always visible */
-        .metric-card h1, .metric-card h2, .metric-card h3,
-        .info-box h1, .info-box h2, .info-box h3,
-        .metric-card p, .info-box p {
-            color: #31333F !important;
-        }
-        
-        /* Custom navigation buttons */
-        .nav-button {
-            width: 100%;
-            padding: 10px 15px;
-            margin: 5px 0;
-            border: none;
-            border-radius: 5px;
-            background-color: #f0f2f6;
-            color: #31333F;
-            text-align: left;
-            cursor: pointer;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        
-        .nav-button:hover {
-            background-color: #FF4B4B;
-            color: white;
-        }
-        
-        .nav-button.active {
-            background-color: #FF4B4B;
-            color: white;
-        }
-        
-        /* Ensure buttons and interactive elements remain visible */
-        .stButton button {
-            color: #ffffff !important;
-            background-color: #FF4B4B !important;
         }
         
         /* Style metrics */
@@ -240,25 +227,16 @@ def main():
         st.title("JantungPintar")
         
         # Navigation buttons
-        pages = {
-            "🏠 Beranda": "home",
-            "🔍 Analisis EKG": "analysis",
-            "ℹ️ Tentang MI": "about",
-            "📊 Performa": "performance"
-        }
+        pages = [
+            "🏠 Beranda",
+            "🔍 Analisis EKG",
+            "ℹ️ Tentang MI",
+            "📊 Performa"
+        ]
         
-        for page_name in pages:
-            button_class = "active" if st.session_state.current_page == page_name else ""
-            if st.markdown(f"""
-                <button class="nav-button {button_class}" onclick="document.querySelector('#nav-{pages[page_name]}').click()">
-                    {page_name}
-                </button>
-                """, unsafe_allow_html=True):
-                st.session_state.current_page = page_name
-            
-            # Hidden button for JavaScript click handling
-            if st.button(page_name, key=f"nav-{pages[page_name]}", visible=False):
-                st.session_state.current_page = page_name
+        for page in pages:
+            if st.button(page, key=f"nav_{page}", use_container_width=True):
+                st.session_state.current_page = page
         
         st.markdown("---")
         st.markdown("### Statistik")
