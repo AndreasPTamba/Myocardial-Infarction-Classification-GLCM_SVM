@@ -407,10 +407,25 @@ def display_results(prediction, confidence):
 def show_about_mi_page():
     st.markdown('<h1 class="main-header">Memahami Infark Miokard</h1>', unsafe_allow_html=True)
     
+    # Menambahkan ilustrasi jantung
+    st.image(
+        "https://upload.wikimedia.org/wikipedia/commons/3/3d/Heart_anterior_exterior_view.png",
+        caption="Ilustrasi Jantung dan Sistem Peredaran Darah",
+        use_column_width=True
+    )
+    
     st.markdown("""
     ### Apa itu Infark Miokard?
-    Infark Miokard (MI) terjadi ketika aliran darah ke otot jantung terhambat, 
-    menyebabkan kerusakan jaringan. Kondisi darurat medis ini memerlukan penanganan segera.
+    Infark Miokard (MI), atau lebih dikenal sebagai serangan jantung, terjadi ketika aliran darah 
+    ke otot jantung terhambat oleh penyumbatan pada pembuluh darah koroner. Hal ini dapat menyebabkan 
+    kerusakan permanen pada jaringan jantung jika tidak ditangani segera.
+    """)
+    
+    # Menambahkan informasi statistik
+    st.info("""
+    **Tahukah Anda?**  
+    Penyakit jantung adalah salah satu penyebab utama kematian di dunia. Penanganan dan 
+    deteksi dini sangat penting untuk menyelamatkan nyawa.
     """)
 
     col1, col2 = st.columns(2)
@@ -421,16 +436,36 @@ def show_about_mi_page():
         - Tekanan Darah Tinggi
         - Kolesterol Tinggi
         - Obesitas
+        - Kurangnya Aktivitas Fisik
+        - Pola Makan Tidak Sehat
         """)
+        st.image(
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Quit_smoking_illustration.svg/512px-Quit_smoking_illustration.svg.png",
+            caption="Berhenti merokok untuk mengurangi risiko MI",
+            use_column_width=True
+        )
     
     with col2:
         st.subheader("Faktor Risiko yang Tidak Dapat Diubah")
         st.markdown("""
-        - Usia
-        - Jenis Kelamin
-        - Riwayat Keluarga
-        - Genetik
+        - Usia (Risiko meningkat seiring bertambahnya usia)
+        - Jenis Kelamin (Pria lebih berisiko, terutama sebelum menopause)
+        - Riwayat Keluarga dengan Penyakit Jantung
+        - Faktor Genetik
         """)
+        st.image(
+            "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Family_genogram.svg/512px-Family_genogram.svg.png",
+            caption="Riwayat keluarga dapat memengaruhi risiko penyakit jantung",
+            use_column_width=True
+        )
+
+    # Menambahkan catatan akhir
+    st.markdown("""
+    ### Pencegahan
+    Perubahan gaya hidup yang sehat, seperti pola makan seimbang, olahraga teratur, dan menghindari stres, 
+    dapat mengurangi risiko infark miokard secara signifikan. Konsultasikan dengan dokter untuk informasi lebih lanjut.
+    """)
+
 
 def show_model_performance_page():
     st.markdown('<h1 class="main-header">Analitik Performa Model</h1>', unsafe_allow_html=True)
