@@ -407,12 +407,6 @@ def display_results(prediction, confidence):
 def show_about_mi_page():
     st.markdown('<h1 class="main-header">Memahami Infark Miokard</h1>', unsafe_allow_html=True)
 
-    # Ilustrasi jantung menggunakan URL gambar yang valid
-    st.image(
-        "https://upload.wikimedia.org/wikipedia/commons/9/9e/Heart_anatomy_with_coronary_arteries_and_veins.png",
-        caption="Ilustrasi Jantung dan Sistem Peredaran Darah",
-        use_container_width=True
-    )
 
     st.markdown("""
     ### Apa itu Infark Miokard?
@@ -438,11 +432,6 @@ def show_about_mi_page():
         - Kurangnya Aktivitas Fisik
         - Pola Makan Tidak Sehat
         """)
-        st.image(
-            "https://cdn.pixabay.com/photo/2016/11/18/16/14/no-smoking-1834640_1280.png",
-            caption="Berhenti merokok untuk mengurangi risiko MI",
-            use_container_width=True
-        )
 
     with col2:
         st.subheader("Faktor Risiko yang Tidak Dapat Diubah")
@@ -452,11 +441,6 @@ def show_about_mi_page():
         - Riwayat Keluarga dengan Penyakit Jantung
         - Faktor Genetik
         """)
-        st.image(
-            "https://cdn.pixabay.com/photo/2015/12/01/20/28/family-1071458_1280.png",
-            caption="Riwayat keluarga dapat memengaruhi risiko penyakit jantung",
-            use_container_width=True
-        )
 
     st.markdown("""
     ### Pencegahan
