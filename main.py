@@ -154,31 +154,25 @@ def main():
         
         .sub-header {
             font-size: 1.8rem;
-            color: #31333F;
             margin-bottom: 1.5rem;
         }
         
         .metric-card {
-            background-color: #ffffff;
             padding: 1.5rem;
             border-radius: 10px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            color: #31333F;
         }
         
         .info-box {
-            background-color: rgba(255, 255, 255, 0.9);
             padding: 1rem;
             border-radius: 5px;
             margin: 1rem 0;
-            color: #31333F;
         }
         
         /* Custom button styling */
         div[data-testid="stButton"] button {
             width: 100%;
             background-color: #f0f2f6;
-            color: #31333F;
             border: none;
             padding: 0.5rem 1rem;
             margin: 0.25rem 0;
@@ -189,31 +183,61 @@ def main():
         
         div[data-testid="stButton"] button:hover {
             background-color: #FF4B4B;
-            color: white;
+            color: white !important;
         }
         
         /* Active button state */
         div[data-testid="stButton"] button.active {
             background-color: #FF4B4B;
-            color: white;
+            color: white !important;
         }
         
-        /* Override Streamlit's default text colors */
-        .stMarkdown, .stText {
-            color: #31333F !important;
+        /* Dark mode styles */
+        @media (prefers-color-scheme: dark) {
+            .stMarkdown, .stText, p, h1, h2, h3, h4, h5, h6 {
+                color: #ffffff !important;
+            }
+            
+            .metric-card, .info-box {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+            
+            div[data-testid="stButton"] button {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: #ffffff !important;
+            }
+            
+            .dataframe {
+                color: #ffffff !important;
+            }
+        }
+        
+        /* Light mode styles */
+        @media (prefers-color-scheme: light) {
+            .stMarkdown, .stText, p, h1, h2, h3, h4, h5, h6 {
+                color: #31333F !important;
+            }
+            
+            .metric-card, .info-box {
+                background-color: #ffffff;
+            }
+            
+            div[data-testid="stButton"] button {
+                color: #31333F !important;
+            }
+            
+            .dataframe {
+                background-color: #ffffff;
+                color: #31333F !important;
+            }
         }
         
         /* Style metrics */
         .css-1wivap2 {
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(255, 255, 255, 0.1);
             border-radius: 10px;
             padding: 1rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        /* Style dataframes */
-        .dataframe {
-            background-color: #ffffff;
         }
         </style>
     """, unsafe_allow_html=True)
