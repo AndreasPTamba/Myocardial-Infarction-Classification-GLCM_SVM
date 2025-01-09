@@ -411,7 +411,7 @@ def show_about_mi_page():
     st.image(
         "https://upload.wikimedia.org/wikipedia/commons/9/9e/Heart_anatomy_with_coronary_arteries_and_veins.png",
         caption="Ilustrasi Jantung dan Sistem Peredaran Darah",
-        use_column_width=True
+        use_container_width=True
     )
 
     st.markdown("""
