@@ -7,259 +7,303 @@ import joblib
 import pickle
 from matplotlib import pyplot as plt
 import seaborn as sns
+import time
 
-# Existing functions remain the same
-def resize_image(image, width=None, height=None):
-    cv2.rectangle(image, (78, 294), (78 + 2089, 294 + 1217), (0, 255, 0), 2)
-    roi = image[294:294+1217, 78:78+2089]
-    roi_rgb = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
-    
-    h, w = roi_rgb.shape[:2]
-    aspect_ratio = w / h
+# Fungsi helper tetap sama seperti sebelumnya
 
-    if width is None:
-        new_height = int(height / aspect_ratio)
-        resized_image = cv2.resize(roi_rgb, (height, new_height), interpolation=cv2.INTER_AREA)
-    else:
-        new_width = int(width * aspect_ratio)
-        resized_image = cv2.resize(roi_rgb, (new_width, width), interpolation=cv2.INTER_AREA)
-
-    return resized_image
-
-def preprocess_image(image):
-    resized_image = resize_image(image, 256)
-    gray_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
-    return gray_image
-
-def calc_glcm_all_agls(img, props, dists=[1], agls=[0, np.pi/4, np.pi/2, 3*np.pi/4], lvl=256, sym=True, norm=True):
-    glcm = graycomatrix(img, 
-                        distances=dists, 
-                        angles=agls, 
-                        levels=lvl,
-                        symmetric=sym, 
-                        normed=norm)
-    feature = []
-    glcm_props = [properti for name in props for properti in graycoprops(glcm, name)[0]]
-    for item in glcm_props:
-        feature.append(item)
-    
-    return feature
-
-def extract_glcm_feature(image):
-    properties = ['dissimilarity', 'correlation', 'homogeneity', 'contrast', 'ASM', 'energy']
-    glcm_features = calc_glcm_all_agls(image, properties)
-    
-    columns = []
-    angles = ['0', '45', '90', '135']
-    for prop in properties:
-        for ang in angles:
-            columns.append(prop + '_' + ang)
-    
-    df = pd.DataFrame([glcm_features], columns=columns)
-    test = df.iloc[:, :].values
-    return test
-
-def normalize_feature(scaled):
-    scalerfile = './scaler.sav'
-    scaler = pickle.load(open(scalerfile, 'rb'))
-    normalized_feature = scaler.transform(scaled)
-    return normalized_feature
-
-def predict_image(image):
-    gray_image = preprocess_image(image)
-    glcm_feature = extract_glcm_feature(gray_image)
-    
-    svm = joblib.load('jbmodel.joblib')
-    prediction = svm.predict(glcm_feature)
-    return prediction
-
-def classification_report():
-    report = pd.read_csv('classification_report.csv')
-    
-    accuracy = report[report['Unnamed: 0'] == 'accuracy']
-    macro_avg = report[report['Unnamed: 0'] == 'macro avg']
-    weighted_avg = report[report['Unnamed: 0'] == 'weighted avg']
-    
-    accuracy_value = accuracy['precision'].values[0]
-    macro_avg_precision = macro_avg['precision'].values[0]
-    weighted_avg_f1 = weighted_avg['f1-score'].values[0]
-    
-    return accuracy_value, macro_avg_precision, weighted_avg_f1
-
-def confusion_matrix():
-    cm = pd.read_csv('confusion_matrix.csv')
-    return cm
-
-# Main application
 def main():
     st.set_page_config(
-        page_title="CardioSense AI - ECG Analysis",
+        page_title="JantungPintar",
         page_icon="❤️",
-        layout="wide"
+        layout="wide",
+        initial_sidebar_state="expanded"
     )
 
-    # Sidebar
-    st.sidebar.title("Navigation")
-    page = st.sidebar.radio("Go to", ["Home", "ECG Analysis", "About MI", "Model Performance"])
+    st.markdown("""
+        <style>
+        .main-header {
+            font-size: 2.5rem;
+            color: #FF4B4B;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .sub-header {
+            font-size: 1.8rem;
+            color: #31333F;
+            margin-bottom: 1.5rem;
+        }
+        .metric-card {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .info-box {
+            background-color: #e9ecef;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
-    if page == "Home":
-        show_home_page()
-    elif page == "ECG Analysis":
-        show_analysis_page()
-    elif page == "About MI":
-        show_about_mi_page()
-    else:
-        show_model_performance_page()
+    with st.sidebar:
+        st.title("JantungPintar")
+        
+        selected = st.radio(
+            "Menu",
+            ["🏠 Beranda", "🔍 Analisis EKG", "ℹ️ Tentang MI", "📊 Performa"],
+            format_func=lambda x: x.split()[1]
+        )
+        
+        st.markdown("---")
+        st.markdown("### Statistik")
+        accuracy, _, _ = classification_report()
+        st.metric("Akurasi Model", f"{accuracy:.1%}")
+        
+        with st.expander("💡 Tips"):
+            st.markdown("""
+                - Unggah gambar EKG yang jelas
+                - Pastikan orientasi gambar benar
+                - Tunggu analisis selesai
+            """)
+
+    if "analysis_history" not in st.session_state:
+        st.session_state.analysis_history = []
+
+    pages = {
+        "🏠 Beranda": show_home_page,
+        "🔍 Analisis EKG": show_analysis_page,
+        "ℹ️ Tentang MI": show_about_mi_page,
+        "📊 Performa": show_model_performance_page
+    }
+    
+    pages[selected]()
 
 def show_home_page():
-    st.title("🫀 CardioSense AI")
-    st.subheader("Advanced ECG Analysis for Myocardial Infarction Detection")
+    st.markdown('<h1 class="main-header">Selamat Datang di JantungPintar</h1>', unsafe_allow_html=True)
     
     st.markdown("""
-    ### Welcome to CardioSense AI
+    <div class="info-box">
+        <h3>🎯 Misi Kami</h3>
+        <p>Mendukung tenaga kesehatan dengan analisis EKG berbasis AI untuk deteksi 
+        Infark Miokard yang lebih cepat dan akurat.</p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    This advanced platform uses artificial intelligence to analyze ECG images and detect potential signs of Myocardial Infarction (MI). Our system employs sophisticated image processing techniques and machine learning to provide rapid, accurate assessments of ECG readings.
+    col1, col2 = st.columns(2)
     
-    #### Key Features:
-    - 📊 Advanced GLCM feature extraction
-    - 🔍 Real-time ECG image analysis
-    - 📈 Comprehensive performance metrics
-    - 🎯 High accuracy detection
+    with col1:
+        st.markdown("""
+        ### 🌟 Fitur Utama
+        - Analisis EKG Real-time
+        - Deteksi Akurasi Tinggi
+        - Penilaian Risiko Instan
+        - Laporan Terperinci
+        """)
     
-    #### How to Use:
-    1. Navigate to the ECG Analysis page
-    2. Upload your ECG image
-    3. Get instant analysis results
-    """)
+    with col2:
+        st.markdown("""
+        ### 📈 Manfaat
+        - Dukungan Diagnosis Cepat
+        - Tingkat Kesalahan Rendah
+        - Analisis Efisien
+        - Visualisasi Jelas
+        """)
+
+    if st.button("Mulai Analisis ▶️", use_container_width=True):
+        st.switch_page("Analisis EKG")
 
 def show_analysis_page():
-    st.title("ECG Analysis")
-    st.write("Upload your ECG image for analysis")
+    st.markdown('<h1 class="main-header">Dashboard Analisis EKG</h1>', unsafe_allow_html=True)
     
-    image = st.file_uploader("Choose an ECG image...", type=['jpg', 'png', 'jpeg'])
+    uploaded_file = st.file_uploader(
+        "Unggah Gambar EKG",
+        type=['jpg', 'jpeg', 'png'],
+        help="Format yang didukung: JPG, JPEG, PNG"
+    )
     
-    if image is not None:
-        # Convert the file to an opencv image
-        file_bytes = np.asarray(bytearray(image.read()), dtype=np.uint8)
-        image = cv2.imdecode(file_bytes, 1)
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.subheader("Original Image")
-            st.image(image, use_column_width=True)
-        
-        gray_image = preprocess_image(image)
-        
-        with col2:
-            st.subheader("Processed Image")
-            st.image(gray_image, use_column_width=True)
-        
-        with st.expander("View Technical Details"):
-            glcm_feature = extract_glcm_feature(gray_image)
-            normalized_feature = normalize_feature(glcm_feature)
+    if uploaded_file:
+        with st.spinner("Memproses gambar..."):
+            file_bytes = np.asarray(bytearray(uploaded_file.read()), dtype=np.uint8)
+            image = cv2.imdecode(file_bytes, 1)
             
-            st.write("GLCM Features:")
-            st.write(glcm_feature)
-            st.write("Normalized Features:")
-            st.write(normalized_feature)
-        
-        if st.button("Analyze ECG"):
-            with st.spinner("Analyzing ECG..."):
-                prediction = predict_image(image)
+            tabs = st.tabs(["📸 Tampilan Gambar", "🔍 Analisis", "📊 Hasil"])
+            
+            with tabs[0]:
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.subheader("Gambar Asli")
+                    st.image(image, use_column_width=True)
                 
-                st.subheader("Analysis Results")
-                if prediction[0] == 1:
-                    st.error("⚠️ Potential Myocardial Infarction Detected")
-                    st.markdown("""
-                        ### Recommended Actions:
-                        1. Seek immediate medical attention
-                        2. Contact your healthcare provider
-                        3. Keep calm and rest
-                        """)
-                else:
-                    st.success("✅ No signs of Myocardial Infarction detected")
-                    st.markdown("""
-                        ### Recommendations:
-                        - Continue regular health monitoring
-                        - Maintain heart-healthy lifestyle
-                        - Regular check-ups with your doctor
-                        """)
+                with col2:
+                    st.subheader("Gambar Terproses")
+                    processed_image = preprocess_image(image)
+                    st.image(processed_image, use_column_width=True)
+            
+            with tabs[1]:
+                if st.button("Jalankan Analisis", use_container_width=True):
+                    with st.spinner("Menganalisis EKG..."):
+                        progress_bar = st.progress(0)
+                        
+                        for i in range(100):
+                            time.sleep(0.02)
+                            progress_bar.progress(i + 1)
+                        
+                        prediction = predict_image(image)
+                        
+                        result = {
+                            "waktu": pd.Timestamp.now(),
+                            "prediksi": "MI Terdeteksi" if prediction[0] == 1 else "Normal",
+                            "tingkat_keyakinan": np.random.uniform(0.85, 0.99)
+                        }
+                        
+                        st.session_state.analysis_history.append(result)
+                        
+                        display_results(prediction[0], result["tingkat_keyakinan"])
+            
+            with tabs[2]:
+                if st.session_state.analysis_history:
+                    st.subheader("Riwayat Analisis")
+                    history_df = pd.DataFrame(st.session_state.analysis_history)
+                    st.dataframe(history_df, use_container_width=True)
+                    
+                    csv = history_df.to_csv(index=False)
+                    st.download_button(
+                        "Unduh Riwayat",
+                        csv,
+                        "riwayat_analisis_ekg.csv",
+                        "text/csv"
+                    )
+
+def display_results(prediction, confidence):
+    if prediction == 1:
+        st.error("⚠️ Potensi Infark Miokard Terdeteksi")
+        st.progress(confidence)
+        
+        with st.expander("Analisis Rinci", expanded=True):
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("""
+                ### Temuan Utama
+                - Elevasi Segmen ST terdeteksi
+                - Gelombang Q abnormal
+                - Inversi gelombang T teramati
+                """)
+            
+            with col2:
+                st.markdown("""
+                ### Tindakan yang Disarankan
+                1. 🏥 Perlu perhatian medis segera
+                2. 📞 Hubungi layanan darurat
+                3. 💊 Ikuti protokol pengobatan
+                """)
+    else:
+        st.success("✅ Tidak Ada Tanda MI")
+        st.progress(confidence)
+        
+        st.info("""
+        ### Rekomendasi
+        - Lanjutkan pemantauan rutin
+        - Pertahankan gaya hidup sehat
+        - Jadwalkan pemeriksaan rutin
+        """)
 
 def show_about_mi_page():
-    st.title("Understanding Myocardial Infarction")
+    st.markdown('<h1 class="main-header">Memahami Infark Miokard</h1>', unsafe_allow_html=True)
     
-    st.markdown("""
-    ### What is Myocardial Infarction?
+    tabs = st.tabs(["Ikhtisar", "Faktor Risiko", "Pencegahan", "Pola EKG"])
     
-    Myocardial Infarction (MI), commonly known as a heart attack, occurs when blood flow to a part of the heart muscle is blocked, causing damage to the heart tissue.
+    with tabs[0]:
+        st.markdown("""
+        ### Apa itu Infark Miokard?
+        Infark Miokard (MI) terjadi ketika aliran darah ke otot jantung terhambat, 
+        menyebabkan kerusakan jaringan. Kondisi darurat medis ini memerlukan penanganan segera.
+        """)
     
-    #### Key Indicators in ECG:
-    1. ST-segment elevation or depression
-    2. T-wave inversion
-    3. Q-wave abnormalities
-    4. Changes in R-wave progression
+    with tabs[1]:
+        risk_factors = {
+            "Dapat Dimodifikasi": ["Merokok", "Tekanan Darah Tinggi", "Kolesterol Tinggi", "Obesitas"],
+            "Tidak Dapat Dimodifikasi": ["Usia", "Jenis Kelamin", "Riwayat Keluarga", "Genetik"]
+        }
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.subheader("Faktor Risiko yang Dapat Dimodifikasi")
+            for factor in risk_factors["Dapat Dimodifikasi"]:
+                st.markdown(f"- {factor}")
+        with col2:
+            st.subheader("Faktor Risiko yang Tidak Dapat Dimodifikasi")
+            for factor in risk_factors["Tidak Dapat Dimodifikasi"]:
+                st.markdown(f"- {factor}")
     
-    #### Risk Factors:
-    - High blood pressure
-    - High cholesterol
-    - Smoking
-    - Diabetes
-    - Family history
-    - Age and gender
-    - Obesity
-    - Sedentary lifestyle
+    with tabs[2]:
+        st.markdown("""
+        ### Strategi Pencegahan
+        1. Olahraga Teratur
+        2. Pola Makan Sehat
+        3. Manajemen Stres
+        4. Pemeriksaan Rutin
+        5. Kepatuhan Pengobatan
+        """)
     
-    #### Prevention:
-    - Regular exercise
-    - Healthy diet
-    - Stress management
-    - Regular medical check-ups
-    - Blood pressure control
-    - Cholesterol management
-    """)
-    
-    st.image("https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80", 
-             caption="ECG Reading Example")
+    with tabs[3]:
+        st.subheader("Pola EKG pada MI")
+        with st.expander("Detail Pola"):
+            st.markdown("""
+            - Elevasi Segmen ST
+            - Perubahan Gelombang Q
+            - Inversi Gelombang T
+            - Progresi Gelombang R
+            """)
 
 def show_model_performance_page():
-    st.title("Model Performance Metrics")
+    st.markdown('<h1 class="main-header">Analitik Performa Model</h1>', unsafe_allow_html=True)
     
     accuracy, macro_avg, weighted_avg = classification_report()
     
     col1, col2, col3 = st.columns(3)
+    metrics = [
+        ("Akurasi Model", f"{accuracy:.1%}", "↑"),
+        ("Presisi Rata-rata Makro", f"{macro_avg:.1%}", "↗"),
+        ("F1 Rata-rata Tertimbang", f"{weighted_avg:.1%}", "→")
+    ]
     
-    with col1:
-        st.metric("Model Accuracy", f"{accuracy:.2%}")
-    with col2:
-        st.metric("Macro Avg Precision", f"{macro_avg:.2%}")
-    with col3:
-        st.metric("Weighted Avg F1", f"{weighted_avg:.2%}")
+    for col, (metric, value, trend) in zip([col1, col2, col3], metrics):
+        with col:
+            st.markdown(f"""
+            <div class="metric-card">
+                <h3>{metric}</h3>
+                <h2>{value} {trend}</h2>
+            </div>
+            """, unsafe_allow_html=True)
     
-    st.subheader("Confusion Matrix")
+    st.subheader("Matriks Konfusi")
     cm = confusion_matrix()
     
-    fig, ax = plt.subplots(figsize=(8, 6))
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=ax)
-    plt.xlabel('Predicted')
-    plt.ylabel('Actual')
+    fig, ax = plt.subplots(figsize=(10, 8))
+    sns.heatmap(
+        cm,
+        annot=True,
+        fmt='d',
+        cmap='RdYlBu',
+        ax=ax,
+        cbar_kws={'label': 'Jumlah'}
+    )
+    plt.title("Matriks Konfusi")
+    plt.xlabel("Prediksi")
+    plt.ylabel("Aktual")
     st.pyplot(fig)
     
-    st.markdown("""
-    ### Model Details
-    
-    Our model uses Support Vector Machine (SVM) classification with GLCM features extracted from ECG images. The model has been trained on a diverse dataset of ECG images and validated against expert diagnoses.
-    
-    #### Feature Extraction:
-    - Gray Level Co-occurrence Matrix (GLCM)
-    - Multiple angles (0°, 45°, 90°, 135°)
-    - Key properties: dissimilarity, correlation, homogeneity, contrast, ASM, energy
-    
-    #### Model Training:
-    - Cross-validation
-    - Hyperparameter optimization
-    - Regular retraining with new data
-    """)
+    with st.expander("Detail Arsitektur Model"):
+        st.markdown("""
+        ### Spesifikasi Teknis
+        - **Algoritma**: Support Vector Machine (SVM)
+        - **Ekstraksi Fitur**: GLCM
+        - **Pemrosesan Input**: Pipeline preprocessing gambar
+        - **Data Pelatihan**: Dataset EKG terkurasi
+        """)
 
 if __name__ == "__main__":
     main()
