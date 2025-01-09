@@ -141,21 +141,124 @@ def main():
         initial_sidebar_state="expanded"
     )
 
+    # Apply custom styling
     st.markdown("""
         <style>
-        .main-header {font-size: 2.5rem; color: #FF4B4B; text-align: center; margin-bottom: 2rem;}
-        .sub-header {font-size: 1.8rem; color: #31333F; margin-bottom: 1.5rem;}
-        .metric-card {background-color: #f8f9fa; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);}
-        .info-box {background-color: #e9ecef; padding: 1rem; border-radius: 5px; margin: 1rem 0;}
+        /* Base styles */
+        .main-header {
+            font-size: 2.5rem;
+            color: #FF4B4B;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .sub-header {
+            font-size: 1.8rem;
+            color: #31333F;
+            margin-bottom: 1.5rem;
+        }
+        
+        .metric-card {
+            background-color: #ffffff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            color: #31333F;
+        }
+        
+        .info-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            color: #31333F;
+        }
+        
+        /* Override Streamlit's default text colors */
+        .stMarkdown, .stText {
+            color: #31333F !important;
+        }
+        
+        /* Make text in containers always visible */
+        .metric-card h1, .metric-card h2, .metric-card h3,
+        .info-box h1, .info-box h2, .info-box h3,
+        .metric-card p, .info-box p {
+            color: #31333F !important;
+        }
+        
+        /* Custom navigation buttons */
+        .nav-button {
+            width: 100%;
+            padding: 10px 15px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 5px;
+            background-color: #f0f2f6;
+            color: #31333F;
+            text-align: left;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .nav-button:hover {
+            background-color: #FF4B4B;
+            color: white;
+        }
+        
+        .nav-button.active {
+            background-color: #FF4B4B;
+            color: white;
+        }
+        
+        /* Ensure buttons and interactive elements remain visible */
+        .stButton button {
+            color: #ffffff !important;
+            background-color: #FF4B4B !important;
+        }
+        
+        /* Style metrics */
+        .css-1wivap2 {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* Style dataframes */
+        .dataframe {
+            background-color: #ffffff;
+        }
         </style>
     """, unsafe_allow_html=True)
 
+    # Initialize session state for navigation
+    if 'current_page' not in st.session_state:
+        st.session_state.current_page = "🏠 Beranda"
+
+    # Sidebar navigation
     with st.sidebar:
         st.title("JantungPintar")
-        selected = st.radio(
-            "Menu",
-            ["🏠 Beranda", "🔍 Analisis EKG", "ℹ️ Tentang MI", "📊 Performa"]
-        )
+        
+        # Navigation buttons
+        pages = {
+            "🏠 Beranda": "home",
+            "🔍 Analisis EKG": "analysis",
+            "ℹ️ Tentang MI": "about",
+            "📊 Performa": "performance"
+        }
+        
+        for page_name in pages:
+            button_class = "active" if st.session_state.current_page == page_name else ""
+            if st.markdown(f"""
+                <button class="nav-button {button_class}" onclick="document.querySelector('#nav-{pages[page_name]}').click()">
+                    {page_name}
+                </button>
+                """, unsafe_allow_html=True):
+                st.session_state.current_page = page_name
+            
+            # Hidden button for JavaScript click handling
+            if st.button(page_name, key=f"nav-{pages[page_name]}", visible=False):
+                st.session_state.current_page = page_name
         
         st.markdown("---")
         st.markdown("### Statistik")
@@ -169,14 +272,12 @@ def main():
                 - Tunggu analisis selesai
             """)
 
-    if "analysis_history" not in st.session_state:
-        st.session_state.analysis_history = []
-
-    if selected == "🏠 Beranda":
+    # Page content
+    if st.session_state.current_page == "🏠 Beranda":
         show_home_page()
-    elif selected == "🔍 Analisis EKG":
+    elif st.session_state.current_page == "🔍 Analisis EKG":
         show_analysis_page()
-    elif selected == "ℹ️ Tentang MI":
+    elif st.session_state.current_page == "ℹ️ Tentang MI":
         show_about_mi_page()
     else:
         show_model_performance_page()
