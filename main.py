@@ -135,7 +135,7 @@ def confusion_matrix():
 
 def main():
     st.set_page_config(
-        page_title="JantungPintar",
+        page_title="ADIM",
         page_icon="❤️",
         layout="wide",
         initial_sidebar_state="expanded"
@@ -248,7 +248,7 @@ def main():
 
     # Sidebar navigation
     with st.sidebar:
-        st.title("JantungPintar")
+        st.title("ADIM - Aplikasi Deteksi Infark Miokard")
         
         # Navigation buttons
         pages = [
@@ -285,7 +285,7 @@ def main():
         show_model_performance_page()
 
 def show_home_page():
-    st.markdown('<h1 class="main-header">Selamat Datang di JantungPintar</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="main-header">Selamat Datang di ADIM</h1>', unsafe_allow_html=True)
     
     st.markdown("""
     <div class="info-box">
@@ -299,7 +299,7 @@ def show_home_page():
     with col1:
         st.markdown("""
         ### 🌟 Fitur Utama
-        - Analisis EKG Real-time
+        - Analisis EKG
         - Deteksi Akurasi Tinggi
         - Penilaian Risiko Instan
         - Laporan Terperinci
