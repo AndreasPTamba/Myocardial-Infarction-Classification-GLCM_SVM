@@ -411,7 +411,7 @@ def show_about_mi_page():
     st.image(
         "https://upload.wikimedia.org/wikipedia/commons/3/3d/Heart_anterior_exterior_view.png",
         caption="Ilustrasi Jantung dan Sistem Peredaran Darah",
-        use_column_width=True
+        use_container_width=True
     )
     
     st.markdown("""
@@ -442,7 +442,7 @@ def show_about_mi_page():
         st.image(
             "https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Quit_smoking_illustration.svg/512px-Quit_smoking_illustration.svg.png",
             caption="Berhenti merokok untuk mengurangi risiko MI",
-            use_column_width=True
+            use_container_width=True
         )
     
     with col2:
@@ -456,7 +456,7 @@ def show_about_mi_page():
         st.image(
             "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Family_genogram.svg/512px-Family_genogram.svg.png",
             caption="Riwayat keluarga dapat memengaruhi risiko penyakit jantung",
-            use_column_width=True
+            use_container_width=True
         )
 
     # Menambahkan catatan akhir
